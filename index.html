@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banana 翻译 · 极简中日翻译工具</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --blue:#007AFF; --blue2:#00C6FF; --bg:#F2F2F7;
+    --text:#1C1C1E; --gray:#8E8E93;
+  }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family:'SF Pro Display','Microsoft YaHei UI','Segoe UI',sans-serif;
+    background:var(--bg); color:var(--text); overflow-x:hidden;
+  }
+
+  /* 顶部导航 */
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:18px 7%; backdrop-filter:blur(20px);
+    background:rgba(242,242,247,0.7); transition:.3s;
+  }
+  nav .brand {
+    font-size:22px; font-weight:800;
+    background:linear-gradient(135deg,var(--blue),var(--blue2));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  nav a {
+    color:var(--text); text-decoration:none; margin-left:28px;
+    font-size:15px; font-weight:500; transition:.2s;
+  }
+  nav a:hover { color:var(--blue); }
+  nav .nav-btn {
+    background:var(--blue); color:white; padding:9px 22px;
+    border-radius:12px; margin-left:28px;
+  }
+  nav .nav-btn:hover { background:#0A84FF; color:white; }
+
+  /* 首屏 */
+  .hero {
+    min-height:100vh; display:flex; flex-direction:column;
+    justify-content:center; align-items:center; text-align:center;
+    padding:120px 20px 60px; position:relative; overflow:hidden;
+  }
+  .blob {
+    position:absolute; border-radius:50%; filter:blur(80px);
+    opacity:0.5; animation:float 12s ease-in-out infinite;
+  }
+  .blob1 { width:400px; height:400px; background:#00C6FF;
+    top:-100px; left:-80px; }
+  .blob2 { width:350px; height:350px; background:#007AFF;
+    bottom:-80px; right:-60px; animation-delay:-4s; }
+  .blob3 { width:300px; height:300px; background:#5AC8FA;
+    top:40%; left:55%; animation-delay:-8s; }
+  @keyframes float {
+    0%,100% { transform:translate(0,0) scale(1); }
+    33% { transform:translate(40px,-30px) scale(1.1); }
+    66% { transform:translate(-30px,40px) scale(0.95); }
+  }
+  .hero-content { position:relative; z-index:2; }
+  .hero h1 {
+    font-size:74px; font-weight:800; letter-spacing:-2px;
+    background:linear-gradient(135deg,var(--blue),var(--blue2));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    animation:fadeUp 1s ease;
+  }
+  .hero .sub {
+    font-size:26px; color:var(--text); margin-top:18px; font-weight:600;
+    animation:fadeUp 1s ease .15s both;
+  }
+  .hero .desc {
+    font-size:17px; color:var(--gray); margin-top:20px;
+    max-width:580px; animation:fadeUp 1s ease .3s both;
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(30px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+  .btn-group { margin-top:42px; animation:fadeUp 1s ease .45s both; }
+  .btn {
+    display:inline-block; padding:16px 46px; font-size:17px; font-weight:600;
+    border-radius:16px; text-decoration:none; transition:.25s; margin:0 8px;
+  }
+  .btn-primary {
+    background:var(--blue); color:white;
+    box-shadow:0 8px 24px rgba(0,122,255,0.35);
+  }
+  .btn-primary:hover { transform:translateY(-3px); box-shadow:0 12px 32px rgba(0,122,255,0.45); }
+  .btn-ghost { background:white; color:var(--blue); }
+  .btn-ghost:hover { transform:translateY(-3px); }
+  .version-tag {
+    margin-top:24px; font-size:14px; color:var(--gray);
+    animation:fadeUp 1s ease .6s both;
+  }
+
+  /* 功能区 */
+  .section { max-width:1100px; margin:0 auto; padding:90px 7%; }
+  .section-head { text-align:center; margin-bottom:60px; }
+  .section-head h2 { font-size:40px; font-weight:800; letter-spacing:-1px; }
+  .section-head p { font-size:17px; color:var(--gray); margin-top:14px; }
+  .grid {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:24px;
+  }
+  .card {
+    background:white; border-radius:24px; padding:38px 32px;
+    box-shadow:0 4px 24px rgba(0,0,0,0.05);
+    opacity:0; transform:translateY(40px); transition:.6s;
+  }
+  .card.show { opacity:1; transform:translateY(0); }
+  .card:hover { transform:translateY(-8px); box-shadow:0 16px 40px rgba(0,0,0,0.1); }
+  .card .icon {
+    width:58px; height:58px; border-radius:16px; margin-bottom:20px;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,var(--blue),var(--blue2));
+    color:white; font-size:26px; font-weight:700;
+  }
+  .card h3 { font-size:21px; margin-bottom:12px; }
+  .card p { font-size:15px; color:var(--gray); line-height:1.7; }
+
+  /* 数据展示 */
+  .stats {
+    background:linear-gradient(135deg,#007AFF,#00C6FF); color:white;
+    padding:70px 7%; text-align:center;
+  }
+  .stats-grid {
+    max-width:900px; margin:0 auto; display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:30px;
+  }
+  .stat .num { font-size:52px; font-weight:800; }
+  .stat .label { font-size:16px; opacity:0.85; margin-top:6px; }
+
+  /* CTA */
+  .cta {
+    text-align:center; padding:100px 20px;
+  }
+  .cta h2 { font-size:42px; font-weight:800; letter-spacing:-1px; }
+  .cta p { font-size:18px; color:var(--gray); margin:18px 0 36px; }
+
+  /* 页脚 */
+  footer {
+    text-align:center; padding:50px 20px; color:var(--gray);
+    font-size:14px; border-top:1px solid rgba(0,0,0,0.06);
+  }
+  footer .brand-sm {
+    font-size:20px; font-weight:800; margin-bottom:10px;
+    background:linear-gradient(135deg,var(--blue),var(--blue2));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+
+  @media(max-width:640px){
+    .hero h1 { font-size:50px; }
+    .hero .sub { font-size:20px; }
+    nav a:not(.nav-btn) { display:none; }
+    .section-head h2, .cta h2 { font-size:30px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- 导航 -->
+  <nav id="nav">
+    <div class="brand">Banana</div>
+    <div>
+      <a href="#features">功能</a>
+      <a href="#stats">特点</a>
+      <a href="#download" class="nav-btn">下载</a>
+    </div>
+  </nav>
+
+  <!-- 首屏 -->
+  <header class="hero">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+    <div class="hero-content">
+      <h1>Banana</h1>
+      <div class="sub">极简中日翻译工具</div>
+      <p class="desc">基于 AI 大模型，文字、图片、语音翻译一站搞定。截图标注、全局热键、汇率换算，专注流畅体验。</p>
+      <div class="btn-group">
+        <a href="https://github.com/Bananamaster0803/Banana/releases/download/6.1/Banana6Pro_.exe" class="btn btn-primary">立即下载</a>
+        <a href="#features" class="btn btn-ghost">了解功能</a>
+      </div>
+      <div class="version-tag">最新版本 v6.0 Pro · 仅供学习使用</div>
+    </div>
+  </header>
+
+  <!-- 功能 -->
+  <section class="section" id="features">
+    <div class="section-head">
+      <h2>强大功能，简单体验</h2>
+      <p>每一个细节，都为高效而生</p>
+    </div>
+    <div class="grid">
+      <div class="card"><div class="icon">译</div>
+        <h3>智能翻译</h3>
+        <p>中日双向自动识别，多种语气风格，流式输出逐字呈现，翻译又快又自然。</p></div>
+      <div class="card"><div class="icon">图</div>
+        <h3>截图标注</h3>
+        <p>自定义快捷键截图，画框、箭头、直线随心标注，一键复制到剪贴板。</p></div>
+      <div class="card"><div class="icon">识</div>
+        <h3>图片识别</h3>
+        <p>截图或粘贴图片，自动识别文字并翻译，聊天记录、菜单轻松看懂。</p></div>
+      <div class="card"><div class="icon">音</div>
+        <h3>语音转写</h3>
+        <p>拖入语音文件即可识别翻译，支持 m4a、mp3、wav 等多种格式。</p></div>
+      <div class="card"><div class="icon">汇</div>
+        <h3>汇率换算</h3>
+        <p>实时汇率，人民币、日元、美元一键互换，旅行购物得力助手。</p></div>
+      <div class="card"><div class="icon">键</div>
+        <h3>全局热键</h3>
+        <p>Ctrl+X 随时唤醒，窗口可置顶，内置 AI 对话助手，效率拉满。</p></div>
+    </div>
+  </section>
+
+  <!-- 数据 -->
+  <section class="stats" id="stats">
+    <div class="stats-grid">
+      <div class="stat"><div class="num" data-target="3">0</div><div class="label">翻译输入方式</div></div>
+      <div class="stat"><div class="num" data-target="3">0</div><div class="label">语气风格</div></div>
+      <div class="stat"><div class="num" data-target="100">0</div><div class="label">% 免费使用</div></div>
+      <div class="stat"><div class="num" data-target="2">0</div><div class="label">翻译模式</div></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="download">
+    <h2>现在就开始</h2>
+    <p>下载 Banana，让中日翻译变得简单</p>
+    <a href="https://github.com/Bananamaster0803/Banana/releases/download/6.1/Banana6Pro_.exe">下载 Banana v6.0 Pro</a>
+  </section>
+
+  <!-- 页脚 -->
+  <footer>
+    <div class="brand-sm">Banana</div>
+    极简中日翻译工具 · 仅供学习使用<br>
+    © 2026 Banana Ze
+  </footer>
+
+<script>
+  // 导航栏滚动变化
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('nav');
+    nav.style.boxShadow = window.scrollY > 30 ? '0 2px 20px rgba(0,0,0,0.06)' : 'none';
+  });
+
+  // 卡片滚动出现动画
+  const cards = document.querySelectorAll('.card');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('show'), i * 80);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  cards.forEach(c => io.observe(c));
+
+  // 数字滚动动画
+  const nums = document.querySelectorAll('.num');
+  const numIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const el = e.target;
+        const target = +el.dataset.target;
+        let cur = 0;
+        const step = Math.max(1, Math.ceil(target / 40));
+        const timer = setInterval(() => {
+          cur += step;
+          if (cur >= target) { cur = target; clearInterval(timer); }
+          el.textContent = cur;
+        }, 30);
+        numIO.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  nums.forEach(n => numIO.observe(n));
+</script>
+</body>
+</html>
