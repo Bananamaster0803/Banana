@@ -3,158 +3,367 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Banana 翻译 · 极简中日翻译工具</title>
+<title>BananaX · AI 驱动的智能翻译工具</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   :root {
-    --blue:#007AFF; --blue2:#00C6FF; --bg:#F2F2F7;
-    --text:#1C1C1E; --gray:#8E8E93;
+    --glass-bg: rgba(28, 28, 30, 0.72);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --accent: #0A84FF;
+    --accent-glow: rgba(10, 132, 255, 0.4);
+    --text-primary: #F5F5F7;
+    --text-secondary: #98989D;
+    --card-bg: rgba(44, 44, 46, 0.85);
+    --card-hover: rgba(58, 58, 60, 0.9);
   }
-  html { scroll-behavior:smooth; }
+  
+  html { scroll-behavior: smooth; }
   body {
-    font-family:'SF Pro Display','Microsoft YaHei UI','Segoe UI',sans-serif;
-    background:var(--bg); color:var(--text); overflow-x:hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(180deg, #000000 0%, #1C1C1E 50%, #000000 100%);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
   }
 
-  /* 顶部导航 */
+  /* 毛玻璃导航 */
   nav {
-    position:fixed; top:0; left:0; right:0; z-index:100;
-    display:flex; justify-content:space-between; align-items:center;
-    padding:18px 7%; backdrop-filter:blur(20px);
-    background:rgba(242,242,247,0.7); transition:.3s;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 7%;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background: var(--glass-bg);
+    border-bottom: 1px solid var(--glass-border);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  nav.scrolled {
+    padding: 12px 7%;
+    background: rgba(28, 28, 30, 0.92);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   }
   nav .brand {
-    font-size:22px; font-weight:800;
-    background:linear-gradient(135deg,var(--blue),var(--blue2));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    font-size: 22px; font-weight: 700; letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #0A84FF, #00D4FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px var(--accent-glow);
   }
+  nav .links { display: flex; align-items: center; }
   nav a {
-    color:var(--text); text-decoration:none; margin-left:28px;
-    font-size:15px; font-weight:500; transition:.2s;
+    color: var(--text-secondary); text-decoration: none;
+    margin-left: 32px; font-size: 15px; font-weight: 500;
+    transition: color 0.2s;
   }
-  nav a:hover { color:var(--blue); }
+  nav a:hover { color: var(--text-primary); }
   nav .nav-btn {
-    background:var(--blue); color:white; padding:9px 22px;
-    border-radius:12px; margin-left:28px;
+    background: var(--accent);
+    color: white;
+    padding: 10px 24px;
+    border-radius: 12px;
+    margin-left: 32px;
+    box-shadow: 0 4px 16px var(--accent-glow);
+    transition: all 0.2s;
   }
-  nav .nav-btn:hover { background:#0A84FF; color:white; }
+  nav .nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--accent-glow);
+  }
 
-  /* 首屏 */
+  /* Hero 区 - 3D 悬浮果冻球 */
   .hero {
-    min-height:100vh; display:flex; flex-direction:column;
-    justify-content:center; align-items:center; text-align:center;
-    padding:120px 20px 60px; position:relative; overflow:hidden;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center;
+    padding: 140px 20px 80px;
+    position: relative;
+    overflow: hidden;
   }
-  .blob {
-    position:absolute; border-radius:50%; filter:blur(80px);
-    opacity:0.5; animation:float 12s ease-in-out infinite;
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(10, 132, 255, 0.15), transparent 70%);
+    transform: translate(-50%, -50%);
+    animation: pulse 8s ease-in-out infinite;
   }
-  .blob1 { width:400px; height:400px; background:#00C6FF;
-    top:-100px; left:-80px; }
-  .blob2 { width:350px; height:350px; background:#007AFF;
-    bottom:-80px; right:-60px; animation-delay:-4s; }
-  .blob3 { width:300px; height:300px; background:#5AC8FA;
-    top:40%; left:55%; animation-delay:-8s; }
+  @keyframes pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.5; }
+  }
+  .jelly-ball {
+    position: absolute;
+    border-radius: 50%;
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    animation: float 15s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .jelly1 {
+    width: 320px; height: 320px;
+    background: radial-gradient(circle at 30% 30%, rgba(10, 132, 255, 0.4), rgba(0, 212, 255, 0.2));
+    top: 10%; left: 10%;
+    box-shadow: 0 20px 60px rgba(10, 132, 255, 0.3), inset 0 -2px 40px rgba(255, 255, 255, 0.1);
+  }
+  .jelly2 {
+    width: 260px; height: 260px;
+    background: radial-gradient(circle at 70% 40%, rgba(0, 212, 255, 0.35), rgba(10, 132, 255, 0.15));
+    bottom: 15%; right: 12%;
+    animation-delay: -5s;
+    box-shadow: 0 20px 60px rgba(0, 212, 255, 0.25), inset 0 -2px 40px rgba(255, 255, 255, 0.08);
+  }
+  .jelly3 {
+    width: 200px; height: 200px;
+    background: radial-gradient(circle at 50% 50%, rgba(10, 132, 255, 0.3), rgba(255, 255, 255, 0.05));
+    top: 60%; left: 70%;
+    animation-delay: -10s;
+    box-shadow: 0 15px 50px rgba(10, 132, 255, 0.2), inset 0 2px 30px rgba(255, 255, 255, 0.12);
+  }
   @keyframes float {
-    0%,100% { transform:translate(0,0) scale(1); }
-    33% { transform:translate(40px,-30px) scale(1.1); }
-    66% { transform:translate(-30px,40px) scale(0.95); }
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(60px, -50px) rotate(5deg); }
+    66% { transform: translate(-40px, 60px) rotate(-5deg); }
   }
-  .hero-content { position:relative; z-index:2; }
+  
+  .hero-content { position: relative; z-index: 2; }
   .hero h1 {
-    font-size:74px; font-weight:800; letter-spacing:-2px;
-    background:linear-gradient(135deg,var(--blue),var(--blue2));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    animation:fadeUp 1s ease;
+    font-size: 88px; font-weight: 800; letter-spacing: -3px;
+    background: linear-gradient(135deg, #FFFFFF 0%, #0A84FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 80px var(--accent-glow);
+    animation: fadeUp 1s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .hero .sub {
-    font-size:26px; color:var(--text); margin-top:18px; font-weight:600;
-    animation:fadeUp 1s ease .15s both;
+  .hero .tagline {
+    font-size: 28px; color: var(--text-primary);
+    margin-top: 24px; font-weight: 600; letter-spacing: -0.5px;
+    animation: fadeUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
   }
   .hero .desc {
-    font-size:17px; color:var(--gray); margin-top:20px;
-    max-width:580px; animation:fadeUp 1s ease .3s both;
+    font-size: 18px; color: var(--text-secondary);
+    margin-top: 20px; max-width: 620px; line-height: 1.7;
+    animation: fadeUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
   }
   @keyframes fadeUp {
-    from { opacity:0; transform:translateY(30px); }
-    to { opacity:1; transform:translateY(0); }
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-  .btn-group { margin-top:42px; animation:fadeUp 1s ease .45s both; }
+  
+  .btn-group {
+    margin-top: 48px;
+    animation: fadeUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
+  }
   .btn {
-    display:inline-block; padding:16px 46px; font-size:17px; font-weight:600;
-    border-radius:16px; text-decoration:none; transition:.25s; margin:0 8px;
+    display: inline-block;
+    padding: 18px 52px;
+    font-size: 18px; font-weight: 600;
+    border-radius: 16px;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 0 10px;
   }
   .btn-primary {
-    background:var(--blue); color:white;
-    box-shadow:0 8px 24px rgba(0,122,255,0.35);
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 10px 40px var(--accent-glow);
   }
-  .btn-primary:hover { transform:translateY(-3px); box-shadow:0 12px 32px rgba(0,122,255,0.45); }
-  .btn-ghost { background:white; color:var(--blue); }
-  .btn-ghost:hover { transform:translateY(-3px); }
+  .btn-primary:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 16px 56px var(--accent-glow);
+  }
+  .btn-ghost {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+  }
+  .btn-ghost:hover {
+    background: var(--card-hover);
+    transform: translateY(-4px);
+  }
+  
   .version-tag {
-    margin-top:24px; font-size:14px; color:var(--gray);
-    animation:fadeUp 1s ease .6s both;
+    margin-top: 32px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    animation: fadeUp 1s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
   }
 
-  /* 功能区 */
-  .section { max-width:1100px; margin:0 auto; padding:90px 7%; }
-  .section-head { text-align:center; margin-bottom:60px; }
-  .section-head h2 { font-size:40px; font-weight:800; letter-spacing:-1px; }
-  .section-head p { font-size:17px; color:var(--gray); margin-top:14px; }
+  /* 功能卡片区 - 毛玻璃卡片 */
+  .section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 120px 7%;
+    position: relative;
+  }
+  .section-head {
+    text-align: center;
+    margin-bottom: 80px;
+  }
+  .section-head h2 {
+    font-size: 52px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    background: linear-gradient(135deg, var(--text-primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .section-head p {
+    font-size: 19px;
+    color: var(--text-secondary);
+    margin-top: 16px;
+  }
+  
   .grid {
-    display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 28px;
   }
   .card {
-    background:white; border-radius:24px; padding:38px 32px;
-    box-shadow:0 4px 24px rgba(0,0,0,0.05);
-    opacity:0; transform:translateY(40px); transition:.6s;
+    background: var(--card-bg);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 42px 36px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateY(60px);
   }
-  .card.show { opacity:1; transform:translateY(0); }
-  .card:hover { transform:translateY(-8px); box-shadow:0 16px 40px rgba(0,0,0,0.1); }
+  .card.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .card:hover {
+    background: var(--card-hover);
+    transform: translateY(-12px);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.12);
+  }
   .card .icon {
-    width:58px; height:58px; border-radius:16px; margin-bottom:20px;
-    display:flex; align-items:center; justify-content:center;
-    background:linear-gradient(135deg,var(--blue),var(--blue2));
-    color:white; font-size:26px; font-weight:700;
+    width: 64px; height: 64px;
+    border-radius: 18px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--accent), #00D4FF);
+    color: white;
+    font-size: 28px;
+    font-weight: 700;
+    box-shadow: 0 8px 24px var(--accent-glow),
+                inset 0 -2px 12px rgba(0, 0, 0, 0.2);
   }
-  .card h3 { font-size:21px; margin-bottom:12px; }
-  .card p { font-size:15px; color:var(--gray); line-height:1.7; }
+  .card h3 {
+    font-size: 24px;
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+  .card p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
 
-  /* 数据展示 */
+  /* 数据展示 - 渐变果冻背景 */
   .stats {
-    background:linear-gradient(135deg,#007AFF,#00C6FF); color:white;
-    padding:70px 7%; text-align:center;
+    background: linear-gradient(135deg, 
+      rgba(10, 132, 255, 0.2) 0%,
+      rgba(0, 212, 255, 0.15) 100%);
+    backdrop-filter: blur(40px);
+    padding: 100px 7%;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .stats::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 50%, rgba(10, 132, 255, 0.3), transparent 50%),
+      radial-gradient(circle at 80% 50%, rgba(0, 212, 255, 0.3), transparent 50%);
+    animation: pulse 10s ease-in-out infinite;
   }
   .stats-grid {
-    max-width:900px; margin:0 auto; display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:30px;
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    position: relative;
+    z-index: 1;
   }
-  .stat .num { font-size:52px; font-weight:800; }
-  .stat .label { font-size:16px; opacity:0.85; margin-top:6px; }
+  .stat {
+    background: rgba(44, 44, 46, 0.4);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 32px 20px;
+    transition: transform 0.3s;
+  }
+  .stat:hover {
+    transform: translateY(-8px);
+  }
+  .stat .num {
+    font-size: 62px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #FFFFFF, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat .label {
+    font-size: 17px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+  }
 
   /* CTA */
   .cta {
-    text-align:center; padding:100px 20px;
+    text-align: center;
+    padding: 120px 20px;
   }
-  .cta h2 { font-size:42px; font-weight:800; letter-spacing:-1px; }
-  .cta p { font-size:18px; color:var(--gray); margin:18px 0 36px; }
+  .cta h2 {
+    font-size: 56px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    background: linear-gradient(135deg, var(--text-primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .cta p {
+    font-size: 20px;
+    color: var(--text-secondary);
+    margin: 24px 0 48px;
+  }
 
   /* 页脚 */
   footer {
-    text-align:center; padding:50px 20px; color:var(--gray);
-    font-size:14px; border-top:1px solid rgba(0,0,0,0.06);
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+    font-size: 15px;
+    border-top: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
   }
-  footer .brand-sm {
-    font-size:20px; font-weight:800; margin-bottom:10px;
-    background:linear-gradient(135deg,var(--blue),var(--blue2));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  .brand-sm {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #0A84FF, #00D4FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
-  @media(max-width:640px){
-    .hero h1 { font-size:50px; }
-    .hero .sub { font-size:20px; }
-    nav a:not(.nav-btn) { display:none; }
-    .section-head h2, .cta h2 { font-size:30px; }
+  @media(max-width: 768px) {
+    .hero h1 { font-size: 56px; }
+    .hero .tagline { font-size: 22px; }
+    nav a:not(.nav-btn) { display: none; }
+    .section-head h2, .cta h2 { font-size: 38px; }
+    .grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -162,88 +371,112 @@
 
   <!-- 导航 -->
   <nav id="nav">
-    <div class="brand">Banana</div>
-    <div>
+    <div class="brand">BananaX</div>
+    <div class="links">
       <a href="#features">功能</a>
-      <a href="#stats">特点</a>
+      <a href="#stats">数据</a>
       <a href="#download" class="nav-btn">下载</a>
     </div>
   </nav>
 
   <!-- 首屏 -->
   <header class="hero">
-    <div class="blob blob1"></div>
-    <div class="blob blob2"></div>
-    <div class="blob blob3"></div>
+    <div class="jelly-ball jelly1"></div>
+    <div class="jelly-ball jelly2"></div>
+    <div class="jelly-ball jelly3"></div>
     <div class="hero-content">
-      <h1>Banana</h1>
-      <div class="sub">极简中日翻译工具</div>
-      <p class="desc">基于 AI 大模型，文字、图片、语音翻译一站搞定。截图标注、全局热键、汇率换算，专注流畅体验。</p>
+      <h1>BananaX</h1>
+      <div class="tagline">AI 驱动的智能翻译工具</div>
+      <p class="desc">基于 DeepSeek 大模型，支持文字、图片、语音翻译。全局热键、悬浮显示、汇率换算，为跨语言沟通而生。</p>
       <div class="btn-group">
-        <a href="https://github.com/Bananamaster0803/Banana/releases/download/8/Banana8_.exe">立即下载</a>
-        <a href="#features" class="btn btn-ghost">了解功能</a>
+        <a href="#download" class="btn btn-primary">立即下载</a>
+        <a href="#features" class="btn btn-ghost">了解更多</a>
       </div>
-      <div class="version-tag">最新版本 v8 · 仅供学习使用</div>
+      <div class="version-tag">最新版本 v1.0 · Windows 10/11 · 免费使用</div>
     </div>
   </header>
 
   <!-- 功能 -->
   <section class="section" id="features">
     <div class="section-head">
-      <h2>强大功能，简单体验</h2>
-      <p>每一个细节，都为高效而生</p>
+      <h2>强大功能，极致体验</h2>
+      <p>每一个细节，都为效率而生</p>
     </div>
     <div class="grid">
-      <div class="card"><div class="icon">译</div>
+      <div class="card">
+        <div class="icon">译</div>
         <h3>智能翻译</h3>
-        <p>中日双向自动识别，多种语气风格，流式输出逐字呈现，翻译又快又自然。</p></div>
-      <div class="card"><div class="icon">图</div>
-        <h3>截图标注</h3>
-        <p>自定义快捷键截图，画框、箭头、直线随心标注，一键复制到剪贴板。</p></div>
-      <div class="card"><div class="icon">识</div>
-        <h3>图片识别</h3>
-        <p>截图或粘贴图片，自动识别文字并翻译，聊天记录、菜单轻松看懂。</p></div>
-      <div class="card"><div class="icon">音</div>
-        <h3>语音转写</h3>
-        <p>拖入语音文件即可识别翻译，支持 m4a、mp3、wav 等多种格式。</p></div>
-      <div class="card"><div class="icon">汇</div>
-        <h3>汇率换算</h3>
-        <p>实时汇率，人民币、日元、美元一键互换，旅行购物得力助手。</p></div>
-      <div class="card"><div class="icon">键</div>
-        <h3>全局热键</h3>
-        <p>Ctrl+X 随时唤醒，窗口可置顶，内置 AI 对话助手，效率拉满。</p></div>
+        <p>中日英多语言自动识别，三种语气风格（正式/恋人/朋友），AI 深度优化，译文自然流畅不跑偏。</p>
+      </div>
+      <div class="card">
+        <div class="icon">键</div>
+        <h3>全局热键翻译</h3>
+        <p>选中任何文字按 F1（可自定义），自动复制、翻译、悬浮显示译文，无需切换窗口，效率翻倍。</p>
+      </div>
+      <div class="card">
+        <div class="icon">音</div>
+        <h3>语音转写翻译</h3>
+        <p>支持 m4a、mp3、wav 等音频格式，拖入即可识别文字并翻译，语音聊天记录轻松看懂。</p>
+      </div>
+      <div class="card">
+        <div class="icon">汇</div>
+        <h3>实时汇率换算</h3>
+        <p>20+ 主流货币实时汇率，自由选择任意货币对，一行输入、多行联动，旅行购物必备。</p>
+      </div>
+      <div class="card">
+        <div class="icon">窗</div>
+        <h3>悬浮窗显示</h3>
+        <p>译文悬浮显示在鼠标旁边，毛玻璃质感，10 秒自动消失，不打扰工作流程。</p>
+      </div>
+      <div class="card">
+        <div class="icon">AI</div>
+        <h3>AI 助手</h3>
+        <p>内置 DeepSeek 对话助手，随时解答问题、优化文案、头脑风暴，一个窗口搞定一切。</p>
+      </div>
     </div>
   </section>
 
   <!-- 数据 -->
   <section class="stats" id="stats">
     <div class="stats-grid">
-      <div class="stat"><div class="num" data-target="3">0</div><div class="label">翻译输入方式</div></div>
-      <div class="stat"><div class="num" data-target="3">0</div><div class="label">语气风格</div></div>
-      <div class="stat"><div class="num" data-target="100">0</div><div class="label">% 免费使用</div></div>
-      <div class="stat"><div class="num" data-target="2">0</div><div class="label">翻译模式</div></div>
+      <div class="stat">
+        <div class="num" data-target="6">0</div>
+        <div class="label">核心功能</div>
+      </div>
+      <div class="stat">
+        <div class="num" data-target="20">0</div>
+        <div class="label">支持货币</div>
+      </div>
+      <div class="stat">
+        <div class="num" data-target="3">0</div>
+        <div class="label">语气风格</div>
+      </div>
+      <div class="stat">
+        <div class="num" data-target="100">0</div>
+        <div class="label">% 免费使用</div>
+      </div>
     </div>
   </section>
 
   <!-- CTA -->
   <section class="cta" id="download">
     <h2>现在就开始</h2>
-    <p>下载 Banana，让中日翻译变得简单</p>
-    <a href="https://github.com/Bananamaster0803/Banana/releases/download/8/Banana8_.exe">下载 Banana v8</a>
+    <p>下载 BananaX，让跨语言沟通变得简单</p>
+    <a href="https://github.com/Bananamaster0803/Banana/releases/download/v1.0/BananaX_Setup.exe" class="btn btn-primary">下载 BananaX v1.0</a>
   </section>
 
   <!-- 页脚 -->
   <footer>
-    <div class="brand-sm">Banana</div>
-    极简中日翻译工具 · 仅供学习使用<br>
-    © 2026 Banana Ze
+    <div class="brand-sm">BananaX</div>
+    AI 驱动的智能翻译工具 · 仅供学习使用<br>
+    © 2026 Banana Ze · Powered by DeepSeek
   </footer>
 
 <script>
   // 导航栏滚动变化
+  const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => {
-    const nav = document.getElementById('nav');
-    nav.style.boxShadow = window.scrollY > 30 ? '0 2px 20px rgba(0,0,0,0.06)' : 'none';
+    nav.classList.toggle('scrolled', window.scrollY > 50);
   });
 
   // 卡片滚动出现动画
@@ -251,11 +484,11 @@
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e, i) => {
       if (e.isIntersecting) {
-        setTimeout(() => e.target.classList.add('show'), i * 80);
+        setTimeout(() => e.target.classList.add('show'), i * 100);
         io.unobserve(e.target);
       }
     });
-  }, { threshold: 0.15 });
+  }, { threshold: 0.2 });
   cards.forEach(c => io.observe(c));
 
   // 数字滚动动画
@@ -266,12 +499,15 @@
         const el = e.target;
         const target = +el.dataset.target;
         let cur = 0;
-        const step = Math.max(1, Math.ceil(target / 40));
+        const step = Math.max(1, Math.ceil(target / 50));
         const timer = setInterval(() => {
           cur += step;
-          if (cur >= target) { cur = target; clearInterval(timer); }
+          if (cur >= target) {
+            cur = target;
+            clearInterval(timer);
+          }
           el.textContent = cur;
-        }, 30);
+        }, 25);
         numIO.unobserve(el);
       }
     });
